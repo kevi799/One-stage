@@ -25,28 +25,36 @@ def is_perfect(n):
     return sum(i for i in range(1, n) if n % i == 0) == n
 
 def is_armstrong(n):
-    digits = [int(d) for d in str(n)]
+    digits = [int(d) for d in str(abs(n))]
     num_digits = len(digits)
-    return sum(d ** num_digits for d in digits) == n
+    return sum(d ** num_digits for d in digits) == abs(n)
 
 def digit_sum(n):
-    return sum(int(d) for d in str(n))
+    return sum(int(d) for d in str(abs(n)))
 
 @cache.memoize(timeout=3600)
 def get_fun_fact(n, properties):
     if "armstrong" in properties:
-        digits = [int(d) for d in str(n)]
+        digits = [int(d) for d in str(abs(n))]
         num_digits = len(digits)
         armstrong_calc = " + ".join(f"{d}^{num_digits}" for d in digits)
         return f"{n} is an Armstrong number because {armstrong_calc} = {n}"
     
-    url = f"http://numbersapi.com/{n}/math"
+    url = f"http://numbersapi.com/{abs(n)}/math"
     try:
         response = requests.get(url, timeout=5)
         response.raise_for_status()
         return response.text
     except requests.exceptions.RequestException:
         return "No fun fact available."
+
+def generate_error_response(number, error_message):
+    error_response = OrderedDict([
+        ("number", f"{number}"),
+        ("error", True),
+        ("message", error_message)
+    ])
+    return Response(json.dumps(error_response, sort_keys=False), mimetype='application/json'), 400
 
 @app.route('/')
 def home():
@@ -58,14 +66,14 @@ def home():
 def classify_number():
     number = request.args.get('number')
     
-    if not number or not number.lstrip('-').isdigit():
-        error_response = OrderedDict([
-            ("number", "alphabet"),
-            ("error", True)
-        ])
-        return Response(json.dumps(error_response, sort_keys=False), mimetype='application/json'), 400
+    if not number:
+        return generate_error_response(number, "No number provided. Please provide a valid number.")
+    
+    if not number.lstrip('-').isdigit():
+        return generate_error_response(number, "Invalid input. Please provide a valid integer.")
 
     number = int(number)
+
     properties = []
     if is_armstrong(number):
         properties.append("armstrong")
@@ -80,7 +88,6 @@ def classify_number():
         "fun_fact": get_fun_fact(number, properties)
     }
     
-
     ordered_response = OrderedDict([
         ("number", response_data["number"]),
         ("is_prime", response_data["is_prime"]),
