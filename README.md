@@ -17,8 +17,8 @@ or an Armstrong number, and provides additional details such as its parity (odd/
 1. Clone the repository:
 
    ```
-   git clone https://github.com/Matutozi/number-classification-api.git
-   cd number-classification-api
+   git clone https://github.com/kevi799/One-stage.git
+   cd One-stage
    ```
 
 2. Install dependencies:
@@ -68,4 +68,4 @@ https://hng.tech/hire/python-developers
 
 ### Deployment
 
-The API is deployed at [EndPoint URL](https://your-deployment-url.com/api/classify-number)
+The API is deployed at [EndPoint URL](https://one-stage-a2w8zqpvn-kevi799s-projects.vercel.app)
