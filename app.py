@@ -51,7 +51,6 @@ def get_fun_fact(n, properties):
 
 def generate_error_response(number):
     error_response = OrderedDict([
-        ("number", f"{number}"),
         ("error", True)
     ])
     return Response(json.dumps(error_response, sort_keys=False), mimetype='application/json'), 400
@@ -66,7 +65,10 @@ def home():
 def classify_number():
     number = request.args.get('number')
 
-    if not number or not number.lstrip('-').isdigit():
+    if not number:
+        return generate_error_response(number)
+
+    if not number.lstrip('-').isdigit():
         return generate_error_response(number)
 
     number = int(number)
