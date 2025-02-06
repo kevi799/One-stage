@@ -48,11 +48,10 @@ def get_fun_fact(n, properties):
     except requests.exceptions.RequestException:
         return "No fun fact available."
 
-def generate_error_response(number, error_message):
+def generate_error_response(number):
     error_response = OrderedDict([
         ("number", f"{number}"),
-        ("error", True),
-        ("message", error_message)
+        ("error", True)
     ])
     return Response(json.dumps(error_response, sort_keys=False), mimetype='application/json'), 400
 
@@ -67,10 +66,10 @@ def classify_number():
     number = request.args.get('number')
     
     if not number:
-        return generate_error_response(number, "No number provided. Please provide a valid number.")
+        return generate_error_response(number)
     
     if not number.lstrip('-').isdigit():
-        return generate_error_response(number, "Invalid input. Please provide a valid integer.")
+        return generate_error_response(number)
 
     number = int(number)
 
