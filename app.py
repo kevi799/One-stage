@@ -28,12 +28,11 @@ def is_armstrong(n):
 def digit_sum(n):
     return sum(int(d) for d in str(abs(n)))
 
-def generate_error_response(number):
+def generate_error_response():
     error_response = {
-        "number": f"{number}",
         "error": True
     }
-    return Response(json.dumps(error_response, sort_keys=False), mimetype='application/json'), 400
+    return Response(json.dumps(error_response), mimetype='application/json'), 400
 
 @app.route('/')
 def home():
@@ -44,7 +43,7 @@ def classify_number():
     number = request.args.get('number')
 
     if not number or not number.lstrip('-').isdigit():
-        return generate_error_response(number)
+        return generate_error_response()
 
     number = int(number)
 
