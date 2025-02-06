@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, Response
 import json
 import requests
@@ -97,4 +98,4 @@ def classify_number():
     return Response(json.dumps(result, sort_keys=False), mimetype='application/json')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+       app.run(host='0.0.0.0', port=8080, debug=True)
