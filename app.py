@@ -1,6 +1,7 @@
 from flask import Flask, request, Response
 import json
 import requests
+import math
 from flask_cors import CORS
 from flask_caching import Cache
 from collections import OrderedDict
@@ -39,8 +40,8 @@ def get_fun_fact(n, properties):
         num_digits = len(digits)
         armstrong_calc = " + ".join(f"{d}^{num_digits}" for d in digits)
         return f"{n} is an Armstrong number because {armstrong_calc} = {n}"
-    
-    url = f"http://numbersapi.com/{abs(n)}/math"
+
+    url = f"http://numbersapi.com/{abs(n)}"
     try:
         response = requests.get(url, timeout=5)
         response.raise_for_status()
@@ -64,11 +65,8 @@ def home():
 @app.route('/api/classify-number', methods=['GET'])
 def classify_number():
     number = request.args.get('number')
-    
-    if not number:
-        return generate_error_response(number)
-    
-    if not number.lstrip('-').isdigit():
+
+    if not number or not number.lstrip('-').isdigit():
         return generate_error_response(number)
 
     number = int(number)
@@ -78,7 +76,7 @@ def classify_number():
         properties.append("armstrong")
     properties.append("even" if number % 2 == 0 else "odd")
 
-    response_data = {
+    result = {
         "number": number,
         "is_prime": is_prime(number),
         "is_perfect": is_perfect(number),
@@ -86,14 +84,14 @@ def classify_number():
         "digit_sum": digit_sum(number),
         "fun_fact": get_fun_fact(number, properties)
     }
-    
+
     ordered_response = OrderedDict([
-        ("number", response_data["number"]),
-        ("is_prime", response_data["is_prime"]),
-        ("is_perfect", response_data["is_perfect"]),
-        ("properties", response_data["properties"]),
-        ("digit_sum", response_data["digit_sum"]),
-        ("fun_fact", response_data["fun_fact"])
+        ("number", result["number"]),
+        ("is_prime", result["is_prime"]),
+        ("is_perfect", result["is_perfect"]),
+        ("properties", result["properties"]),
+        ("digit_sum", result["digit_sum"]),
+        ("fun_fact", result["fun_fact"])
     ])
 
     return Response(json.dumps(ordered_response, sort_keys=False), mimetype='application/json'), 200
